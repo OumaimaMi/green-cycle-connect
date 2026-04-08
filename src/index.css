@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 140 20% 97%;
+    --foreground: 150 30% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 150 30% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 150 30% 10%;
+
+    --primary: 152 60% 36%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 145 30% 92%;
+    --secondary-foreground: 150 30% 15%;
+
+    --muted: 140 15% 94%;
+    --muted-foreground: 150 10% 45%;
+
+    --accent: 160 50% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 145 20% 88%;
+    --input: 145 20% 88%;
+    --ring: 152 60% 36%;
+
+    --radius: 0.75rem;
+
+    /* BMC section colors */
+    --bmc-partners: 152 55% 92%;
+    --bmc-activities: 152 45% 88%;
+    --bmc-resources: 160 40% 90%;
+    --bmc-value: 152 60% 36%;
+    --bmc-value-fg: 0 0% 100%;
+    --bmc-relations: 145 35% 90%;
+    --bmc-channels: 140 30% 92%;
+    --bmc-segments: 155 50% 90%;
+    --bmc-costs: 20 70% 94%;
+    --bmc-revenue: 45 80% 92%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 152 60% 36%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 145 30% 92%;
+    --sidebar-accent-foreground: 150 30% 15%;
+    --sidebar-border: 145 20% 88%;
+    --sidebar-ring: 152 60% 36%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+}
