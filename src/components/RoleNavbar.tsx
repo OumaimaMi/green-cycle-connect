@@ -1,6 +1,7 @@
-import { Link, useLocation } from "react-router-dom";
-import { Leaf, Menu, X, Home } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Leaf, Menu, X, Home, LogOut } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 interface NavItem {
   label: string;
@@ -21,8 +22,15 @@ const roleConfig = {
 
 const RoleNavbar = ({ role, items }: RoleNavbarProps) => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { signOut } = useAuth();
   const [open, setOpen] = useState(false);
   const config = roleConfig[role];
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate("/");
+  };
 
   return (
     <nav className="sticky top-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border">
@@ -60,6 +68,12 @@ const RoleNavbar = ({ role, items }: RoleNavbarProps) => {
               <span>{item.icon}</span> {item.label}
             </Link>
           ))}
+          <button
+            onClick={handleLogout}
+            className="ml-2 px-3 py-1.5 rounded-lg text-sm font-semibold bg-secondary text-foreground hover:bg-destructive hover:text-destructive-foreground transition-colors flex items-center gap-1.5"
+          >
+            <LogOut className="w-4 h-4" /> Déconnexion
+          </button>
         </div>
 
         {/* Mobile toggle */}
@@ -91,6 +105,12 @@ const RoleNavbar = ({ role, items }: RoleNavbarProps) => {
               {item.icon} {item.label}
             </Link>
           ))}
+          <button
+            onClick={() => { setOpen(false); handleLogout(); }}
+            className="w-full text-left block px-4 py-3 rounded-lg text-sm font-semibold text-destructive hover:bg-destructive/10 flex items-center gap-2"
+          >
+            <LogOut className="w-4 h-4" /> Déconnexion
+          </button>
         </div>
       )}
     </nav>

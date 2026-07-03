@@ -1,9 +1,12 @@
 import { Coins, Recycle, Trophy, TrendingUp, Flame, Star } from "lucide-react";
+import { useEffect, useState } from "react";
 import RoleNavbar from "@/components/RoleNavbar";
 import StatCard from "@/components/StatCard";
 import ActivityItem from "@/components/ActivityItem";
 import NotificationPanel from "@/components/NotificationPanel";
 import { Progress } from "@/components/ui/progress";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 const navItems = [
   { label: "Accueil", path: "/citoyen", icon: "🏠" },
@@ -26,20 +29,38 @@ const challenges = [
 ];
 
 const CitoyenAccueil = () => {
+  const { user } = useAuth();
+  const [profile, setProfile] = useState<{ full_name: string | null; waste_coins: number } | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("profiles")
+      .select("full_name, waste_coins")
+      .eq("id", user.id)
+      .maybeSingle()
+      .then(({ data }) => setProfile(data ?? { full_name: null, waste_coins: 0 }));
+  }, [user]);
+
+  const displayName =
+    profile?.full_name?.trim() ||
+    (user?.email ? user.email.split("@")[0] : "Citoyen");
+  const coins = profile?.waste_coins ?? 0;
+
   return (
     <div className="min-h-screen bg-background">
       <RoleNavbar role="citoyen" items={navItems} />
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl md:text-3xl font-extrabold text-foreground">Bonjour, Ahmed 👋</h1>
+            <h1 className="text-2xl md:text-3xl font-extrabold text-foreground">Bonjour, {displayName} 👋</h1>
             <p className="text-muted-foreground text-sm mt-1">Niveau Éco-Héros 🌟 — Continuez à recycler !</p>
           </div>
           <NotificationPanel />
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <StatCard icon={<Coins className="w-5 h-5 text-primary" />} label="WasteCoins" value="1,250" sub="+125 cette semaine" accent />
+          <StatCard icon={<Coins className="w-5 h-5 text-primary" />} label="WasteCoins" value={coins.toLocaleString()} sub="Solde actuel" accent />
           <StatCard icon={<Recycle className="w-5 h-5 text-primary" />} label="Total recyclé" value="47 kg" sub="Ce mois" />
           <StatCard icon={<Trophy className="w-5 h-5 text-primary" />} label="Classement" value="#12" sub="Grand Tunis" />
           <StatCard icon={<TrendingUp className="w-5 h-5 text-primary" />} label="Impact CO₂" value="-23 kg" sub="Économisé" />

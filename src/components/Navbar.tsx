@@ -1,6 +1,7 @@
-import { Link, useLocation } from "react-router-dom";
-import { Leaf, Menu, X } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Leaf, Menu, X, LogIn, LogOut } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 const navItems = [
   { label: "Accueil", path: "/" },
@@ -11,7 +12,18 @@ const navItems = [
 
 const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
   const [open, setOpen] = useState(false);
+
+  const handleAuthClick = async () => {
+    if (user) {
+      await signOut();
+      navigate("/");
+    } else {
+      navigate("/auth");
+    }
+  };
 
   return (
     <nav className="sticky top-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border">
@@ -37,6 +49,12 @@ const Navbar = () => {
               {item.label}
             </Link>
           ))}
+          <button
+            onClick={handleAuthClick}
+            className="ml-2 px-4 py-2 rounded-lg text-sm font-semibold bg-secondary text-foreground hover:bg-primary hover:text-primary-foreground transition-colors flex items-center gap-1.5"
+          >
+            {user ? <><LogOut className="w-4 h-4" /> Déconnexion</> : <><LogIn className="w-4 h-4" /> Connexion</>}
+          </button>
         </div>
 
         <button className="md:hidden p-2" onClick={() => setOpen(!open)}>

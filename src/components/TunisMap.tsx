@@ -2,6 +2,10 @@ import { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
+interface Props {
+  userPosition?: { lat: number; lng: number } | null;
+}
+
 interface MapMarker {
   lat: number;
   lng: number;
@@ -44,9 +48,10 @@ const markers: MapMarker[] = [
   { lat: 36.8680, lng: 10.3490, label: "Sidi Bou Said — Citoyen", type: "citoyen" },
 ];
 
-const TunisMap = () => {
+const TunisMap = ({ userPosition }: Props = {}) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
+  const userMarkerRef = useRef<L.Marker | null>(null);
 
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
@@ -77,8 +82,31 @@ const TunisMap = () => {
     return () => {
       map.remove();
       mapInstanceRef.current = null;
+      userMarkerRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map || !userPosition) return;
+
+    const userIcon = L.divIcon({
+      html: `<div style="background:#ef4444;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;border:4px solid white;box-shadow:0 2px 10px rgba(239,68,68,0.6);">📍</div>`,
+      className: "",
+      iconSize: [36, 36],
+      iconAnchor: [18, 18],
+    });
+
+    if (userMarkerRef.current) {
+      userMarkerRef.current.setLatLng([userPosition.lat, userPosition.lng]);
+    } else {
+      userMarkerRef.current = L.marker([userPosition.lat, userPosition.lng], { icon: userIcon })
+        .addTo(map)
+        .bindPopup("<strong>📍 Vous êtes ici</strong>");
+    }
+    map.setView([userPosition.lat, userPosition.lng], 14);
+    userMarkerRef.current.openPopup();
+  }, [userPosition]);
 
   return (
     <div className="bg-card rounded-xl border border-border overflow-hidden">

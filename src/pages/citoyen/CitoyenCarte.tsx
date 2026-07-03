@@ -20,13 +20,26 @@ const nearbyPoints = [
 
 const CitoyenCarte = () => {
   const [locating, setLocating] = useState(false);
+  const [position, setPosition] = useState<{ lat: number; lng: number } | null>(null);
 
   const handleGeolocate = () => {
+    if (!navigator.geolocation) {
+      toast.error("Géolocalisation non supportée par ce navigateur");
+      return;
+    }
     setLocating(true);
-    setTimeout(() => {
-      setLocating(false);
-      toast.success("Position mise à jour : Tunis Centre");
-    }, 1500);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setPosition({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setLocating(false);
+        toast.success(`Position trouvée : ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`);
+      },
+      (err) => {
+        setLocating(false);
+        toast.error(`Erreur localisation : ${err.message}`);
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
   };
 
   return (
@@ -50,7 +63,7 @@ const CitoyenCarte = () => {
 
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
-            <TunisMap />
+            <TunisMap userPosition={position} />
           </div>
           <div className="bg-card rounded-xl border border-border p-6">
             <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">

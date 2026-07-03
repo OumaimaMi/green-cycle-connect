@@ -19,20 +19,31 @@ const rewards = [
   { id: 6, icon: "🎁", name: "Kit recyclage", desc: "Kit de tri sélectif pour la maison", cost: 120, category: "Environnement" },
 ];
 
-const history = [
+const initialHistory = [
   { icon: "☕", name: "Bon café", date: "2 Avril 2026", cost: -50 },
   { icon: "📱", name: "Recharge mobile 5 DT", date: "28 Mars 2026", cost: -80 },
   { icon: "🌳", name: "Planter un arbre", date: "15 Mars 2026", cost: -150 },
 ];
 
 const CitoyenRecompenses = () => {
-  const [balance] = useState(1250);
+  const [balance, setBalance] = useState(1250);
+  const [history, setHistory] = useState(initialHistory);
 
   const handleClaim = (reward: (typeof rewards)[0]) => {
     if (balance < reward.cost) {
       toast.error("Solde insuffisant !");
       return;
     }
+    setBalance((b) => b - reward.cost);
+    setHistory((h) => [
+      {
+        icon: reward.icon,
+        name: reward.name,
+        date: new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }),
+        cost: -reward.cost,
+      },
+      ...h,
+    ]);
     toast.success(`${reward.icon} ${reward.name} réclamé ! -${reward.cost} WC`);
   };
 

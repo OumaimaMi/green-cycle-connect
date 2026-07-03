@@ -3,26 +3,28 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AuthProvider } from "@/hooks/useAuth";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
-// Citoyen
 import CitoyenAccueil from "./pages/citoyen/CitoyenAccueil";
 import CitoyenCarte from "./pages/citoyen/CitoyenCarte";
 import CitoyenScan from "./pages/citoyen/CitoyenScan";
 import CitoyenRecompenses from "./pages/citoyen/CitoyenRecompenses";
 
-// Collecteur
 import CollecteurDashboard from "./pages/collecteur/CollecteurDashboard";
 import CollecteurCarte from "./pages/collecteur/CollecteurCarte";
 import CollecteurCollecte from "./pages/collecteur/CollecteurCollecte";
 
-// Entreprise
 import EntrepriseDashboard from "./pages/entreprise/EntrepriseDashboard";
 import EntrepriseGestion from "./pages/entreprise/EntrepriseGestion";
 import EntrepriseAnalytics from "./pages/entreprise/EntrepriseAnalytics";
 
 const queryClient = new QueryClient();
+
+const protect = (el: JSX.Element) => <ProtectedRoute>{el}</ProtectedRoute>;
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -30,27 +32,27 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/auth" element={<Auth />} />
 
-          {/* Citoyen */}
-          <Route path="/citoyen" element={<CitoyenAccueil />} />
-          <Route path="/citoyen/carte" element={<CitoyenCarte />} />
-          <Route path="/citoyen/scan" element={<CitoyenScan />} />
-          <Route path="/citoyen/recompenses" element={<CitoyenRecompenses />} />
+            <Route path="/citoyen" element={protect(<CitoyenAccueil />)} />
+            <Route path="/citoyen/carte" element={protect(<CitoyenCarte />)} />
+            <Route path="/citoyen/scan" element={protect(<CitoyenScan />)} />
+            <Route path="/citoyen/recompenses" element={protect(<CitoyenRecompenses />)} />
 
-          {/* Collecteur */}
-          <Route path="/collecteur" element={<CollecteurDashboard />} />
-          <Route path="/collecteur/carte" element={<CollecteurCarte />} />
-          <Route path="/collecteur/collecte" element={<CollecteurCollecte />} />
+            <Route path="/collecteur" element={protect(<CollecteurDashboard />)} />
+            <Route path="/collecteur/carte" element={protect(<CollecteurCarte />)} />
+            <Route path="/collecteur/collecte" element={protect(<CollecteurCollecte />)} />
 
-          {/* Entreprise */}
-          <Route path="/entreprise" element={<EntrepriseDashboard />} />
-          <Route path="/entreprise/gestion" element={<EntrepriseGestion />} />
-          <Route path="/entreprise/analytics" element={<EntrepriseAnalytics />} />
+            <Route path="/entreprise" element={protect(<EntrepriseDashboard />)} />
+            <Route path="/entreprise/gestion" element={protect(<EntrepriseGestion />)} />
+            <Route path="/entreprise/analytics" element={protect(<EntrepriseAnalytics />)} />
 
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
